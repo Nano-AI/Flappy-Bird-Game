@@ -1,5 +1,6 @@
 import pygame, random, sys
 from bird import bird
+from pygame.locals import QUIT
 from pipe import pipe
 
 pygame.init()
@@ -11,9 +12,9 @@ background = pygame.image.load('background.png')
 background = pygame.transform.smoothscale(background, (width, height))
 
 startPos = (width/8, height/2)
-pipes = pygame.sprite.Group
+pipes = pygame.sprite.Group()
 player = bird(startPos)
-gapSize = random.randint(200,300)
+gapSize = random.randint(150,250)
 loopCount = 0
 color = (0,0,0)
 screen = pygame.display.set_mode(size)
@@ -30,14 +31,39 @@ def lose():
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    player.reset()
+                    player.reset(startPos)
                     pipes.empty()
                     return
 
 def main():
-    pass
+    global loopCount
+    while True:
+        gapSize = random.randint(10, 50)
+        if loopCount % 90 == 0:
+            topPos = random.randint(0, height/2) - 400
+            pipes.add(pipe((width + 100, topPos + gapSize + 800)))
+            pipes.add(pipe((width + 100, topPos), True))
 
-lose()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    player.speed[1] = -10
+
+        player.update()
+        pipes.update()
+        gets_hit = pygame.sprite.spritecollide(player, pipes, False) \
+            or player.rect.center[1] > height
+
+        screen.blit(background, [0,0])
+        pipes.draw(screen)
+        screen.blit(player.image, player.rect)
+        pygame.display.flip()
+        loopCount += 1
+
+        if gets_hit:
+            lose()
 
 if __name__ == '__main__':
     main()

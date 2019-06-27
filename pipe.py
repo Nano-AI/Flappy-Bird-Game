@@ -4,7 +4,7 @@ class pipe(pygame.sprite.Sprite):
     def __init__(self, pos, isTop = False):
         super().__init__()
         self.image = pygame.image.load('pipe.png')
-        self.image = pygame.transform.smoothscale(self.image, (40, 40))
+        self.image = pygame.transform.smoothscale(self.image, (500, 500))
 
         if isTop:
             self.image = pygame.transform.rotate(self.image, -180)
